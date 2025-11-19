@@ -410,14 +410,30 @@ The key to handling a common cause confounder is to stratify by the common cause
 
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import stats
 
 # Filter observational data by doctor
 dreamy_data = patients_df[patients_df['doctor_name'] == 'Doc Dreamy']
 duck_data = patients_df[patients_df['doctor_name'] == 'Doc Duck']
 
-# Calculate means
+# Calculate overall means
 dreamy_mean = dreamy_data['post_surgical_score'].mean()
 duck_mean = duck_data['post_surgical_score'].mean()
+
+# Calculate means within stratification region (-1 to 1)
+stratification_mask_dreamy = (dreamy_data['severity'] >= -1) & (dreamy_data['severity'] <= 1)
+stratification_mask_duck = (duck_data['severity'] >= -1) & (duck_data['severity'] <= 1)
+
+dreamy_mean_stratified = dreamy_data[stratification_mask_dreamy]['post_surgical_score'].mean()
+duck_mean_stratified = duck_data[stratification_mask_duck]['post_surgical_score'].mean()
+
+# Fit regression lines for trend visualization
+dreamy_slope, dreamy_intercept, _, _, _ = stats.linregress(
+    dreamy_data['severity'], dreamy_data['post_surgical_score']
+)
+duck_slope, duck_intercept, _, _, _ = stats.linregress(
+    duck_data['severity'], duck_data['post_surgical_score']
+)
 
 # Create figure with professional styling
 fig, ax = plt.subplots(figsize=(12, 7))
@@ -436,26 +452,65 @@ ax.scatter(duck_data['severity'], duck_data['post_surgical_score'],
            marker='^', color='#E15759', s=80, alpha=0.7, 
            label='Doc Duck', edgecolors='white', linewidths=1.5, zorder=3)
 
-# Add horizontal dashed lines for means
+# Add regression lines to show trends
+x_trend = np.linspace(patients_df['severity'].min(), patients_df['severity'].max(), 100)
+dreamy_trend = dreamy_slope * x_trend + dreamy_intercept
+duck_trend = duck_slope * x_trend + duck_intercept
+
+ax.plot(x_trend, dreamy_trend, color='#4E79A7', linestyle='-', 
+        linewidth=2.5, alpha=0.6, label='Doc Dreamy Trend', zorder=2)
+ax.plot(x_trend, duck_trend, color='#E15759', linestyle='-', 
+        linewidth=2.5, alpha=0.6, label='Doc Duck Trend', zorder=2)
+
+# Add horizontal dashed lines for overall means
 ax.axhline(y=dreamy_mean, color='#4E79A7', linestyle='--', 
-           linewidth=2, alpha=0.8, zorder=2)
+           linewidth=2, alpha=0.5, zorder=1)
 ax.axhline(y=duck_mean, color='#E15759', linestyle='--', 
-           linewidth=2, alpha=0.8, zorder=2)
+           linewidth=2, alpha=0.5, zorder=1)
+
+# Add horizontal lines for stratified means within -1 to 1 region
+ax.axhline(y=dreamy_mean_stratified, color='#4E79A7', linestyle=':', 
+           linewidth=2.5, alpha=0.8, zorder=2)
+ax.axhline(y=duck_mean_stratified, color='#E15759', linestyle=':', 
+           linewidth=2.5, alpha=0.8, zorder=2)
 
 # Add text annotations with mean values and shape symbols
 # Position annotations on the right side of the plot
 x_max = max(patients_df['severity'].max(), abs(patients_df['severity'].min()))
 x_annotation = x_max * 0.95
 
-# Doc Dreamy annotation with ○ symbol
-ax.text(x_annotation, dreamy_mean, f'○ Mean = {dreamy_mean:.2f}', 
-        fontsize=11, color='#4E79A7', weight='bold', 
+# Overall means (dashed lines)
+ax.text(x_annotation, dreamy_mean, f'○ Overall Mean = {dreamy_mean:.2f}', 
+        fontsize=10, color='#4E79A7', weight='bold', style='italic',
         verticalalignment='center', horizontalalignment='right', zorder=4)
 
-# Doc Duck annotation with △ symbol
-ax.text(x_annotation, duck_mean, f'△ Mean = {duck_mean:.2f}', 
-        fontsize=11, color='#E15759', weight='bold', 
+ax.text(x_annotation, duck_mean, f'△ Overall Mean = {duck_mean:.2f}', 
+        fontsize=10, color='#E15759', weight='bold', style='italic',
         verticalalignment='center', horizontalalignment='right', zorder=4)
+
+# Stratified means (dotted lines) - highlight in stratification region
+ax.text(0, dreamy_mean_stratified, f'○ Stratified Mean = {dreamy_mean_stratified:.2f}', 
+        fontsize=11, color='#4E79A7', weight='bold',
+        verticalalignment='center', horizontalalignment='center', 
+        bbox=dict(boxstyle='round,pad=0.5', facecolor='white', alpha=0.8, edgecolor='#4E79A7'),
+        zorder=5)
+
+ax.text(0, duck_mean_stratified, f'△ Stratified Mean = {duck_mean_stratified:.2f}', 
+        fontsize=11, color='#E15759', weight='bold',
+        verticalalignment='center', horizontalalignment='center',
+        bbox=dict(boxstyle='round,pad=0.5', facecolor='white', alpha=0.8, edgecolor='#E15759'),
+        zorder=5)
+
+# Add annotation highlighting that Doc Duck is better in stratification region
+if duck_mean_stratified < dreamy_mean_stratified:
+    diff = dreamy_mean_stratified - duck_mean_stratified
+    ax.annotate(f'Doc Duck performs {diff:.2f} points better\nin overlapping severity region (-1 to 1)',
+                xy=(0, (dreamy_mean_stratified + duck_mean_stratified) / 2),
+                xytext=(x_max * 0.55, (dreamy_mean_stratified + duck_mean_stratified) / 2 + 0.6),
+                fontsize=11, weight='bold', color='#E15759',
+                arrowprops=dict(arrowstyle='->', color='#E15759', lw=2.5),
+                bbox=dict(boxstyle='round,pad=0.8', facecolor='#FFF3CD', alpha=0.95, edgecolor='#E15759', lw=2.5),
+                zorder=6, horizontalalignment='left')
 
 # Professional styling
 ax.set_xlabel('Initial Patient Severity', fontsize=13, weight='bold')
@@ -467,11 +522,13 @@ ax.set_title('Post-Surgical Symptom Score by Patient Severity',
 # Add grid
 ax.grid(True, alpha=0.3, linestyle='-', linewidth=0.5, zorder=1)
 
-# Add legend (excluding the shaded region from legend to keep it clean)
+# Add legend (excluding the shaded region and trend lines from legend to keep it clean)
 handles, labels = ax.get_legend_handles_labels()
-# Filter out the shaded region from legend
-filtered_handles = [h for h, l in zip(handles, labels) if l != 'Stratification Region']
-filtered_labels = [l for l in labels if l != 'Stratification Region']
+# Filter out the shaded region and trend lines from legend
+filtered_handles = [h for h, l in zip(handles, labels) 
+                    if l not in ['Stratification Region', 'Doc Dreamy Trend', 'Doc Duck Trend']]
+filtered_labels = [l for l in labels 
+                   if l not in ['Stratification Region', 'Doc Dreamy Trend', 'Doc Duck Trend']]
 ax.legend(filtered_handles, filtered_labels, loc='upper right', fontsize=12, 
           framealpha=0.9, edgecolor='gray', fancybox=True, shadow=True)
 
@@ -485,6 +542,21 @@ plt.show()
 Looking at @fig-plot-outcomes-severity, the value of stratifying by severity is visually most obvious with initial patient severity scores between -1 and 1 (highlighted in the overlay). We chose this region because it shows substantial overlap between the two surgeons—both surgeons have considerable data within this range, making it an ideal region for comparing their performance. Outside of this range, there is less data available for making direct comparisons: Doc Duck sees more of the higher-severity patients (severity > 1), while Doc Dreamy sees more of the lower-severity patients (severity < -1).
 
 Within the highlighted region, Doc Dreamy's blue circles tend to be higher (worse) than Doc Duck's red triangles for these patients. It is also obvious that Doc Duck is seeing the more severe patients overall, as his red triangles are generally to the right of Doc Dreamy's blue circles on the x-axis. This is exactly what we would expect if patient severity were a common cause of surgeon choice and surgical outcomes. Despite the aggregate statistics pointing to Doc Dreamy having lower (better) post-surgical symptom scores on average, our visual analysis of this overlapping region leads us to conclude that Doc Duck is actually the better surgeon—a conclusion that would be obscured if we only looked at the means without stratifying by severity.
+
+Enhanced Figure 3 to show that Doc Duck performs better when controlling for patient severity. Changes:
+Regression lines: Added trend lines for each doctor to show the relationship between severity and outcomes.
+Stratified means: Calculated and displayed means within the stratification region (-1 to 1 severity) with dotted horizontal lines, showing performance for similar-severity patients.
+Visual comparison:
+Overall means (dashed lines) show the confounding effect
+Stratified means (dotted lines) show the true comparison
+Annotations highlight the stratified means in the overlapping region
+Highlight annotation: Added an annotation stating how much better Doc Duck performs in the overlapping severity region, with an arrow pointing to the comparison.
+Legend: Cleaned up to exclude trend lines and the stratification region.
+The figure shows:
+Overall, Doc Dreamy appears better (due to confounding)
+When controlling for severity (stratification region -1 to 1), Doc Duck performs better
+The regression lines show the trends, making the comparison clearer
+This aligns with Figure 2 (randomized data), where Doc Duck is shown to be the better doctor. Re-render the document to see the updated figure.
 
 ## How to Solve the Confounder Challenge
 

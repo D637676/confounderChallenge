@@ -3,7 +3,6 @@ title: "Using Randomization"
 subtitle: "Recovering Lost Figures: Visualizing Confounders and Causal Inference"
 format:
   html: default
-  ipynb: default
 bibliography: references.bib
 execute:
   echo: false
@@ -73,7 +72,7 @@ patients_df[['patient', 'severity', 'doctor_id', 'doctor_name', 'post_surgical_s
 )
 
 # Display first few rows
-patients_df.head()
+#patients_df.head()
 ```
 
 ```{python}
@@ -109,7 +108,7 @@ dreamy_mean = dreamy_data['post_surgical_score'].mean()
 duck_mean = duck_data['post_surgical_score'].mean()
 
 # Create figure with professional styling
-fig, ax = plt.subplots(figsize=(12, 7))
+fig, ax = plt.subplots(figsize=(10, 6))
 
 # Plot scatter points with different markers
 # Doc Dreamy: circles, blue
@@ -286,7 +285,7 @@ dreamy_mean_rand = dreamy_data_rand['post_surgical_score'].mean()
 duck_mean_rand = duck_data_rand['post_surgical_score'].mean()
 
 # Create figure with professional styling (same as Figure 1)
-fig, ax = plt.subplots(figsize=(12, 7))
+fig, ax = plt.subplots(figsize=(10, 6))
 
 # Plot scatter points with different markers
 # Doc Dreamy: circles, blue
@@ -374,7 +373,7 @@ dreamy_mean_stratified = dreamy_data[stratification_mask_dreamy]['post_surgical_
 duck_mean_stratified = duck_data[stratification_mask_duck]['post_surgical_score'].mean()
 
 # Create figure with professional styling
-fig, ax = plt.subplots(figsize=(12, 7))
+fig, ax = plt.subplots(figsize=(10, 6))
 
 # Add shaded region highlighting severity between -1 and 1 (stratification region)
 ax.axvspan(-1, 1, alpha=0.15, color='gray', zorder=0)

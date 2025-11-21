@@ -144,7 +144,7 @@ window.Quarto = {
 <div class="cell-output cell-output-stdout">
 <pre><code>Number of patients: 100</code></pre>
 </div>
-<div id="load-data-python" class="cell-output cell-output-display" data-execution_count="9">
+<div id="load-data-python" class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -296,7 +296,7 @@ Figure&nbsp;4: DAG Model Explaining Surgical Outcomes
 <p>Unfortunately, we can’t observe what didn’t happen. The patients we already observed went to the surgeon they chose (or who was available), and we’ll never know their outcomes under the alternative assignment. This is the fundamental problem of causal inference: we only see one world, not the parallel universe where everything else was held constant but the treatment differed.</p>
 <p>Since we cannot rerun history with randomization, we run an experiment to collect the data we need. So, we randomly assigned a sequence of 100 patients to either Dr.&nbsp;Dreamy or Dr.&nbsp;Duck and observed the following data:</p>
 <div id="cell-simulate-data-randomized" class="cell" data-message="false" data-execution_count="4">
-<div id="simulate-data-randomized" class="cell-output cell-output-display" data-execution_count="11">
+<div id="simulate-data-randomized" class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -368,7 +368,7 @@ Figure&nbsp;4: DAG Model Explaining Surgical Outcomes
 <div class="cell-output cell-output-stdout">
 <pre><code>Number of randomized patients: 100</code></pre>
 </div>
-<div id="load-data-randomized-python" class="cell-output cell-output-display" data-execution_count="12">
+<div id="load-data-randomized-python" class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -471,7 +471,8 @@ Figure&nbsp;6: Post-Surgical Symptom Score (lower is better) by Patient and Seve
 </div>
 <p>Looking at <a href="#fig-plot-outcomes-severity" class="quarto-xref">Figure&nbsp;6</a>, the value of stratifying by severity is visually most obvious with initial patient severity scores between -1 and 1 (highlighted in the overlay). We chose this region because it shows substantial overlap between the two surgeons—both surgeons have considerable data within this range, making it an ideal region for comparing their performance. Outside of this range, there is less data available for making direct comparisons: Doc Duck sees more of the higher-severity patients (severity &gt; 1), while Doc Dreamy sees more of the lower-severity patients (severity &lt; -1).</p>
 <p>Within the highlighted region, Doc Dreamy’s blue circles tend to be higher (worse) than Doc Duck’s red triangles for these patients. It is also obvious that Doc Duck is seeing the more severe patients overall, as his red triangles are generally to the right of Doc Dreamy’s blue circles on the x-axis. This is exactly what we would expect if patient severity were a common cause of surgeon choice and surgical outcomes. Despite the aggregate statistics pointing to Doc Dreamy having lower (better) post-surgical symptom scores on average, our visual analysis of this overlapping region leads us to conclude that Doc Duck is actually the better surgeon—a conclusion that would be obscured if we only looked at the means without stratifying by severity.</p>
-<p>Enhanced Figure 3 to show that Doc Duck performs better when controlling for patient severity. Changes: Regression lines: Added trend lines for each doctor to show the relationship between severity and outcomes. Stratified means: Calculated and displayed means within the stratification region (-1 to 1 severity) with dotted horizontal lines, showing performance for similar-severity patients. Visual comparison: Overall means (dashed lines) show the confounding effect Stratified means (dotted lines) show the true comparison Annotations highlight the stratified means in the overlapping region Highlight annotation: Added an annotation stating how much better Doc Duck performs in the overlapping severity region, with an arrow pointing to the comparison. Legend: Cleaned up to exclude trend lines and the stratification region. The figure shows: Overall, Doc Dreamy appears better (due to confounding) When controlling for severity (stratification region -1 to 1), Doc Duck performs better The regression lines show the trends, making the comparison clearer This aligns with Figure 2 (randomized data), where Doc Duck is shown to be the better doctor. Re-render the document to see the updated figure.</p>
+<p>Enhanced Figure 3 to show that Doc Duck performs better when controlling for patient severity. Changes: Stratified means: Calculated and displayed means within the stratification region (-1 to 1 severity) with dotted horizontal lines, showing performance for similar-severity patients. Visual comparison: Overall means (dashed lines) show the confounding effect Stratified means (dotted lines) show the true comparison Annotations highlight the stratified means in the overlapping region Highlight annotation: Added an annotation stating how much better Doc Duck performs in the overlapping severity region, with an arrow pointing to the comparison.</p>
+<p>The figure shows: Overall, Doc Dreamy appears better (due to confounding) When controlling for severity (stratification region -1 to 1), Doc Duck performs better The regression lines show the trends, making the comparison clearer This aligns with Figure 2 (randomized data), where Doc Duck is shown to be the better doctor. Re-render the document to see the updated figure.</p>
 </section>
 </section>
 <section id="how-to-solve-the-confounder-challenge" class="level2">

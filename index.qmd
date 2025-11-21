@@ -483,14 +483,13 @@ Looking at @fig-plot-outcomes-severity, the value of stratifying by severity is 
 Within the highlighted region, Doc Dreamy's blue circles tend to be higher (worse) than Doc Duck's red triangles for these patients. It is also obvious that Doc Duck is seeing the more severe patients overall, as his red triangles are generally to the right of Doc Dreamy's blue circles on the x-axis. This is exactly what we would expect if patient severity were a common cause of surgeon choice and surgical outcomes. Despite the aggregate statistics pointing to Doc Dreamy having lower (better) post-surgical symptom scores on average, our visual analysis of this overlapping region leads us to conclude that Doc Duck is actually the better surgeon—a conclusion that would be obscured if we only looked at the means without stratifying by severity.
 
 Enhanced Figure 3 to show that Doc Duck performs better when controlling for patient severity. Changes:
-Regression lines: Added trend lines for each doctor to show the relationship between severity and outcomes.
 Stratified means: Calculated and displayed means within the stratification region (-1 to 1 severity) with dotted horizontal lines, showing performance for similar-severity patients.
 Visual comparison:
 Overall means (dashed lines) show the confounding effect
 Stratified means (dotted lines) show the true comparison
 Annotations highlight the stratified means in the overlapping region
 Highlight annotation: Added an annotation stating how much better Doc Duck performs in the overlapping severity region, with an arrow pointing to the comparison.
-Legend: Cleaned up to exclude trend lines and the stratification region.
+
 The figure shows:
 Overall, Doc Dreamy appears better (due to confounding)
 When controlling for severity (stratification region -1 to 1), Doc Duck performs better

@@ -246,7 +246,7 @@ patients_randomized_df[['patient', 'severity', 'doctor_id', 'doctor_name', 'post
 )
 
 # Display first few rows
-patients_randomized_df.head()
+#patients_randomized_df.head()
 ```
 
 ```{python}
